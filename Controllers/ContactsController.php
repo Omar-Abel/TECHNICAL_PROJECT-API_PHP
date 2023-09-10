@@ -153,22 +153,22 @@ class ContactsController
 
 
         break;
-      case 'DELETE':
-        $_DELETE = json_decode(file_get_contents('php://input'), true);
-        
-        if (!isset($_DELETE['id']) || !$this->regex->validateId($_DELETE['id'])) {
-          http_response_code(400);
-          echo json_encode([
-            "status" => 400,
-            "message" => "El id es requerido y solo se permite numeros"
-          ]);
+        case 'DELETE':
+          // Obtener el ID del parámetro de la URL
+          $id = isset($_GET['id']) ? $_GET['id'] : null;
+      
+          if ($id === null || !$this->regex->validateId($id)) {
+              http_response_code(400);
+              echo json_encode([
+                  "status" => 400,
+                  "message" => "El ID es requerido y solo se permiten numeros"
+              ]);
+              break;
+          }
+          
+          http_response_code(200);
+          echo json_encode($this->service->deleteContact($id));
           break;
-        }
-
-        $id = $_DELETE['id'];
-        http_response_code(200);
-        echo json_encode($this->service->deleteContact($id));
-        break;
 
       default:
         echo 'Esta API solo maneja los metodos GET, POST, PUT y DELETE';

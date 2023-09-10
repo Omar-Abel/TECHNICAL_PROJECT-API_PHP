@@ -26,6 +26,13 @@ class ContactsService {
     while($row = mysqli_fetch_assoc($result)){
       $contacts[] = new Contacts($row);
     }
+
+    if (empty($contacts)) {
+      return [
+        "status" => 404,
+        "message" => "No existen contactos o eligio un id incorrecto"];
+    }
+
     return $contacts;
     
   }
@@ -54,12 +61,12 @@ class ContactsService {
 
   public function updateContact($contact)
   {
-      $itExists = $this->getContacts($contact->id);
-      if(empty($itExists)){
-        return [
-          "status" => 404,
-          "message" => "El contacto no existe"];
-      }
+    $itExists = $this->getContacts($contact->id);
+    if(!$itExists instanceof Contacts){
+      return [
+        "status" => 404,
+        "message" => "El contacto no existe"];
+    }
 
 
       $query = "UPDATE contacts SET firstName = '$contact->firstName', lastName = '$contact->lastName', email = '$contact->email', phone = '$contact->phone', extraPhone = '$contact->extraPhone' WHERE id = $contact->id";
@@ -78,7 +85,7 @@ class ContactsService {
   public function deleteContact($id)
   {
     $itExists = $this->getContacts($id);
-    if(empty($itExists)){
+    if(!$itExists instanceof Contacts){
       return [
         "status" => 404,
         "message" => "El contacto no existe"];
